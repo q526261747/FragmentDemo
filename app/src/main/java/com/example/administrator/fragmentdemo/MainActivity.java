@@ -7,8 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ContentFragment.ResultMsg {
+    String result = null;
     Button frag_btn;
     ContentFragment contentFragment;
     @Override
@@ -23,10 +25,25 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction transaction = fm.beginTransaction();
                 if (contentFragment==null){
                     contentFragment = new ContentFragment();
+                } else {//防止Fragment already active异常
+                    transaction.remove(contentFragment);
+
+                    contentFragment = new ContentFragment();
                 }
+                Bundle bundle = new Bundle();
+                bundle.putString("msg","activity发的消息");
+                contentFragment.setArguments(bundle);//activity-》fragment
+
                 transaction.replace(R.id.frag,contentFragment);
+
                 transaction.commit();
             }
         });
+    }
+
+    @Override
+    public void sendMsg(String text) {
+        result=text;
+        Toast.makeText(MainActivity.this,result,Toast.LENGTH_SHORT).show();
     }
 }
